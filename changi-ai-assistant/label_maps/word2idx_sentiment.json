@@ -1,0 +1,22 @@
+{
+    "<pad>": 0,
+    "<unk>": 1,
+    "good": 2,
+    "bad": 3,
+    "great": 4,
+    "terrible": 5,
+    "excellent": 6,
+    "poor": 7,
+    "amazing": 8,
+    "awful": 9,
+    "love": 10,
+    "hate": 11,
+    "happy": 12,
+    "sad": 13,
+    "disappointed": 14,
+    "satisfied": 15,
+    "service": 16,
+    "staff": 17,
+    "airport": 18,
+    "experience": 19
+}

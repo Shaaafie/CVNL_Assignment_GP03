@@ -1,16 +1,34 @@
 import streamlit as st
 import tempfile
+import sys
+from pathlib import Path
 
-from src.inference import predict_cnn, predict_rnn, CNN_CONFIG, RNN_CONFIG
+# Add parent directory to path
+parent_dir = str(Path(__file__).parent.parent)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
-st.set_page_config(page_title="Changi AI Prototype", layout="centered")
-st.title("Changi Airport AI Prototype (2 CNN + 2 RNN)")
+from src.inference import predict_cnn, predict_rnn, predict_resnet, CNN_CONFIG, RNN_CONFIG, RESNET_CONFIG
+
+st.set_page_config(page_title="Changi Airport AI Assistant", page_icon="✈️", layout="wide")
+
+# Combine all image models
+ALL_IMAGE_MODELS = dict(
+    **{f"CNN: {k}": ("cnn", k) for k in CNN_CONFIG.keys()},
+    **{f"ResNet: {k}": ("resnet", k) for k in RESNET_CONFIG.keys()}
+)
+
+st.title("✈️ Changi Airport AI Assistant")
+st.markdown("**Multi-Model Prototype:** CNN + ResNet + RNN")
 
 tab1, tab2 = st.tabs(["🖼️ Image Classification (CNN)", "💬 Text Classification (RNN)"])
 
 with tab1:
-    st.subheader("CNN: Aircraft Image Classification")
-    cnn_task = st.selectbox("Choose CNN task", list(CNN_CONFIG.keys()))
+    st.subheader("Aircraft Image Classification")
+    
+    model_name = st.selectbox("Choose Model", list(ALL_IMAGE_MODELS.keys()))
+    model_type, model_key = ALL_IMAGE_MODELS[model_name]
+    
     uploaded = st.file_uploader("Upload an aircraft image", type=["jpg", "jpeg", "png"])
 
     if uploaded:
@@ -20,15 +38,24 @@ with tab1:
             tmp.write(uploaded.read())
             image_path = tmp.name
 
-        if st.button("Run CNN Prediction"):
-            preds = predict_cnn(image_path, cnn_task, top_k=3)
-            best = preds[0]
-            st.write(f"**Prediction:** {best['label']}")
-            st.write(f"**Confidence:** {best['confidence']:.3f}")
+        if st.button("🔍 Analyze Image", type="primary"):
+            with st.spinner("Analyzing..."):
+                try:
+                    if model_type == "cnn":
+                        preds = predict_cnn(image_path, model_key, top_k=5)
+                    else:
+                        preds = predict_resnet(image_path, model_key, top_k=5)
+                    
+                    best = preds[0]
+                    st.success(f"**Top Prediction:** {best['label']}")
+                    st.metric("Confidence", f"{best['confidence']:.1%}")
 
-            st.write("**Top-3:**")
-            for p in preds:
-                st.write(f"- {p['label']}: {p['confidence']:.3f}")
+                    st.write("**Top-5 Predictions:**")
+                    for i, p in enumerate(preds, 1):
+                        st.write(f"{i}. {p['label']}: {p['confidence']:.1%}")
+                except Exception as e:
+                    st.error(f"Error: {str(e)}")
+                    st.info("Make sure model files are in models/ directory")
 
 with tab2:
     st.subheader("RNN: Text Classification")
@@ -39,6 +66,12 @@ with tab2:
         if text.strip() == "":
             st.warning("Please type a message first.")
         else:
-            out = predict_rnn(text, rnn_task)
-            st.write(f"**Prediction:** {out['label']}")
-            st.write(f"**Confidence:** {out['confidence']:.3f}")
+            try:
+                out = predict_rnn(text, rnn_task)
+                st.write(f"**Prediction:** {out['label']}")
+                st.write(f"**Confidence:** {out['confidence']:.3f}")
+            except FileNotFoundError as e:
+                st.error(f"❌ {str(e)}")
+                st.info("📝 Please follow the RNN_MODEL_SETUP.md instructions to export the models from your training notebook.")
+            except Exception as e:
+                st.error(f"Error: {str(e)}")

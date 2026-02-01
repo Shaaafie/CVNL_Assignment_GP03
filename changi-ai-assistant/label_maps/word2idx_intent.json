@@ -1,0 +1,23 @@
+{
+    "<pad>": 0,
+    "<unk>": 1,
+    "flight": 2,
+    "baggage": 3,
+    "check": 4,
+    "in": 5,
+    "gate": 6,
+    "information": 7,
+    "help": 8,
+    "where": 9,
+    "is": 10,
+    "my": 11,
+    "can": 12,
+    "i": 13,
+    "need": 14,
+    "what": 15,
+    "time": 16,
+    "when": 17,
+    "how": 18,
+    "to": 19,
+    "get": 20
+}
