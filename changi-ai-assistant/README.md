@@ -23,20 +23,22 @@ changi-ai-assistant/
 ├── app/
 │   └── streamlit_app.py       # Streamlit web interface
 ├── src/
-│   ├── cnn_model.py           # CNN architecture
-│   ├── rnn_model.py           # BiGRU RNN architecture
+│   ├── aircraft_family_cnn.py # CNN architecture
+│   ├── rnn_model.py           # BiGRU + BiLSTM architectures
+│   ├── resnet_model.py        # ResNet loader
 │   └── inference.py           # Model loading & prediction
 ├── models/                     # Model files (.pth, .pt)
 │   ├── aircraftcnn_family_best.pth
-│   ├── cnn_manufacturer.pth (optional)
 │   ├── resnet_manufacturer.pt
 │   ├── resnet_airline.pt
-│   ├── rnn_intent.pt
-│   └── rnn_sentiment.pt (optional)
+│   ├── RNN_Intent_Classifications.pth
+│   └── best_SentimentRNN_model.pth (optional)
 ├── label_maps/                 # Label mapping files
 │   ├── idx_to_class_aircraft_family.json
-│   ├── word2idx_intentRNN.json
-│   └── id_to_label_intentRNN.json
+│   ├── rnn_vocab_bundle.pkl
+│   ├── intent10_label_map.json
+│   ├── word2idx_sentimentRNN.json
+│   └── id_to_label_sentimentRNN.json
 └── requirements.txt
 
 ```
@@ -54,9 +56,14 @@ pip install -r requirements.txt
 After training your models in the notebook, transfer these files:
 
 **From Colab Training (Intent RNN):**
-- `rnn_intent.pt` → `models/`
-- `word2idx_intentRNN.json` → `label_maps/`
-- `id_to_label_intentRNN.json` → `label_maps/`
+- `RNN_Intent_Classifications.pth` → `models/`
+- `rnn_vocab_bundle.pkl` → `label_maps/`
+- `intent10_label_map.json` → `label_maps/`
+
+**From Colab Training (Sentiment RNN - Optional):**
+- `best_SentimentRNN_model.pth` → `models/`
+- `word2idx_sentimentRNN.json` → `label_maps/`
+- `id_to_label_sentimentRNN.json` → `label_maps/`
 
 **CNN Models:**
 - `aircraftcnn_family_best.pth` → `models/` (already present)
@@ -64,8 +71,18 @@ After training your models in the notebook, transfer these files:
 
 ### 3. Run the Application
 
-```bash
-streamlit run app/streamlit_app.py
+**Windows PowerShell:**
+
+1) Go to the project folder:
+
+```
+cd "C:\Documents\Year 2 Sem 2\CVNL\Assignment\CVNL_Assignment_GP03\changi-ai-assistant"
+```
+
+2) Start the app:
+
+```
+streamlit run "C:\Documents\Year 2 Sem 2\CVNL\Assignment\CVNL_Assignment_GP03\changi-ai-assistant\app\streamlit_app.py"
 ```
 
 The app will open in your browser at `http://localhost:8501`
