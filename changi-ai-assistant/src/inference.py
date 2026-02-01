@@ -1,4 +1,5 @@
 import json
+import pickle
 from pathlib import Path
 import torch
 from PIL import Image
@@ -40,8 +41,8 @@ RESNET_CONFIG = {
 RNN_CONFIG = {
     "Intent Classification": {
         "weights": "models/RNN_Intent_Classifications.pth",
-        "word2idx": "label_maps/word2idx_intent.json",
-        "id2label": "label_maps/label_mapping.json",
+        "vocab_bundle": "label_maps/rnn_vocab_bundle.pkl",
+        "id2label": "label_maps/intent10_label_map.json",
         # Match notebook training params
         "embed_dim": 128,
         "hidden_dim": 256,
@@ -69,6 +70,10 @@ def resolve_path(path: str | Path) -> Path:
 def load_json(path: str | Path):
     with open(resolve_path(path), "r", encoding="utf-8") as f:
         return json.load(f)
+
+def load_vocab_bundle(path: str | Path):
+    with open(resolve_path(path), "rb") as f:
+        return pickle.load(f)
 
 def cnn_transform(img_size=224):
     # match your CNN training normalization
@@ -178,15 +183,23 @@ def load_rnn_model(task_name: str):
 
     cfg = RNN_CONFIG[task_name]
     
-    # Check if files exist
-    if not resolve_path(cfg["word2idx"]).exists():
-        raise FileNotFoundError(f"Vocabulary file not found: {cfg['word2idx']}. Please export it from your training notebook.")
+    # Check for vocab_bundle or word2idx
+    vocab_key = "vocab_bundle" if "vocab_bundle" in cfg else "word2idx"
+    vocab_path = cfg.get(vocab_key, cfg.get("word2idx"))
+    
+    if not resolve_path(vocab_path).exists():
+        raise FileNotFoundError(f"Vocabulary file not found: {vocab_path}. Please export it from your training notebook.")
     if not resolve_path(cfg["id2label"]).exists():
         raise FileNotFoundError(f"Label file not found: {cfg['id2label']}. Please export it from your training notebook.")
     if not resolve_path(cfg["weights"]).exists():
         raise FileNotFoundError(f"Model file not found: {cfg['weights']}. Please export it from your training notebook.")
     
-    word2idx = load_json(cfg["word2idx"])
+    if vocab_key == "vocab_bundle":
+        vocab_data = load_vocab_bundle(vocab_path)
+        word2idx = vocab_data.get("word2idx", {})
+    else:
+        word2idx = load_json(vocab_path)
+    
     id2label = load_json(cfg["id2label"])
     if isinstance(id2label, dict) and "id2label" in id2label:
         id2label = id2label["id2label"]

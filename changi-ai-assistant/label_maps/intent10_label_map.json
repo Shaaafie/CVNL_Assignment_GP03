@@ -1,0 +1,38 @@
+{
+  "labels": [
+    "flight_info",
+    "flight_schedule_time",
+    "airfare_booking",
+    "ground_transport",
+    "airline_info",
+    "airport_directions",
+    "abbrev_codes",
+    "aircraft_info",
+    "capacity_availability",
+    "special_requests"
+  ],
+  "label2id": {
+    "flight_info": 0,
+    "flight_schedule_time": 1,
+    "airfare_booking": 2,
+    "ground_transport": 3,
+    "airline_info": 4,
+    "airport_directions": 5,
+    "abbrev_codes": 6,
+    "aircraft_info": 7,
+    "capacity_availability": 8,
+    "special_requests": 9
+  },
+  "id2label": {
+    "0": "flight_info",
+    "1": "flight_schedule_time",
+    "2": "airfare_booking",
+    "3": "ground_transport",
+    "4": "airline_info",
+    "5": "airport_directions",
+    "6": "abbrev_codes",
+    "7": "aircraft_info",
+    "8": "capacity_availability",
+    "9": "special_requests"
+  }
+}
