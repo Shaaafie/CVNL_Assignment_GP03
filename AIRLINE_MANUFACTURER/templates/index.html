@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aircraft Classifier</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="bg-grid"></div>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Vision Lab / CVNL</p>
+          <h1>Aircraft Identity Scanner</h1>
+          <p class="subhead">
+            Upload an image and get the manufacturer class prediction.
+            Model input: {{ img_size }}?{{ img_size }}. Classes: {{ class_count }}.
+          </p>
+        </div>
+        <div class="badge">PT ? ResNet</div>
+      </header>
+
+      <section class="panel">
+        <div class="upload">
+          <label class="dropzone" id="dropzone">
+            <input id="fileInput" type="file" accept="image/*" />
+            <div>
+              <h2>Drop aircraft image</h2>
+              <p>or click to browse</p>
+            </div>
+          </label>
+
+          <div class="preview">
+            <img id="previewImage" alt="Preview" />
+            <div class="meta" id="fileMeta"></div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="predictBtn" class="primary" disabled>Run classification</button>
+          <button id="resetBtn" class="ghost" disabled>Clear</button>
+        </div>
+
+        <div class="result" id="result">
+          <div class="result-main">
+            <span class="label" id="label">Awaiting input</span>
+            <span class="confidence" id="confidence">?</span>
+          </div>
+          <div class="topk" id="topk"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
